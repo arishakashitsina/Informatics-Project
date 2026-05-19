@@ -19,3 +19,6 @@ sf::FloatRect Bird::getBounds() const {
 void Bird::draw(sf::RenderWindow& window) const {
     // заглушка
 }
+void Bird::reset() {
+    // Пока оставляем пустым. Позже участник, отвечающий за Bird, добавит сброс позиции и скорости.
+}

@@ -17,6 +17,7 @@ public:
     void draw(sf::RenderWindow& window) const;
     bool checkCollision(const sf::FloatRect& birdBounds) const;
     int getScore() const;
+    void reset();
 
 private:
     std::vector<PipePair> m_pipes;

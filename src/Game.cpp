@@ -9,6 +9,15 @@ Game::Game()
     , m_highScore(0)
 {
     m_assets.loadTextures();
+    m_scoreText.setFont(m_assets.getFont());
+    m_scoreText.setCharacterSize(40);
+    m_scoreText.setFillColor(sf::Color::White);
+    m_scoreText.setPosition(20, 20);
+
+    m_highScoreText.setFont(m_assets.getFont());
+    m_highScoreText.setCharacterSize(30);
+    m_highScoreText.setFillColor(sf::Color::White);
+    m_highScoreText.setPosition(20, 70);
     m_assets.loadSounds();
     m_bird.init(m_assets.getTexture("bird"));
     m_pipes.init(m_assets.getTexture("pipe"));
@@ -68,6 +77,9 @@ void Game::render() {
     m_window.clear(sf::Color::Cyan);
     m_bird.draw(m_window);
     m_pipes.draw(m_window);
-    // Здесь позже добавим отображение счёта
+    m_scoreText.setString("Score: " + std::to_string(m_score));
+    m_highScoreText.setString("Best: " + std::to_string(m_highScore));
+    m_window.draw(m_scoreText);
+    m_window.draw(m_highScoreText);
     m_window.display();
 }

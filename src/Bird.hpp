@@ -7,6 +7,7 @@ class Bird {
 public:
     void init(const sf::Texture& texture);
     void update(float dt);
+    void reset();
     void jump();
     sf::FloatRect getBounds() const;
     void draw(sf::RenderWindow& window) const;

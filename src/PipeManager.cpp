@@ -19,3 +19,6 @@ bool PipeManager::checkCollision(const sf::FloatRect& birdBounds) const {
 int PipeManager::getScore() const {
     return 0; // пока ноль
 }
+void PipeManager::reset() {
+    // Пока оставляем пустым. Позже участник, отвечающий за трубы, добавит очистку вектора и сброс счёта.
+}
