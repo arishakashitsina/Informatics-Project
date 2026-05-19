@@ -1,10 +1,13 @@
 #include "PipeManager.hpp"
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 void PipeManager::init(const sf::Texture& texture) {
-    m_texture = texture;
-    m_pipeWidth = texture.getSize().x;
+    // Игнорируем текстуру, создаём свои прямоугольники
+    (void)texture;
+    
+    m_pipeWidth = 60;
     std::srand(std::time(nullptr));
     reset();
 }
@@ -12,48 +15,42 @@ void PipeManager::init(const sf::Texture& texture) {
 void PipeManager::update(float dt) {
     // Движение и удаление
     for (auto it = m_pipes.begin(); it != m_pipes.end(); ) {
-        it->top.move(-PIPE_SPEED * dt, 0.f);
-        it->bottom.move(-PIPE_SPEED * dt, 0.f);
-        if (it->top.getPosition().x + m_pipeWidth < 0.f) {
+        it->topShape.move(-PIPE_SPEED * dt, 0.f);
+        it->bottomShape.move(-PIPE_SPEED * dt, 0.f);
+        if (it->topShape.getPosition().x + m_pipeWidth < 0.f) {
             it = m_pipes.erase(it);
         } else {
             ++it;
         }
     }
 
-    // Генерация
+    // Генерация новых труб
     m_spawnTimer += dt;
     if (m_spawnTimer >= SPAWN_INTERVAL) {
         m_spawnTimer = 0.f;
         PipePair pipe;
 
-        float gapY = 150.f + rand() % 250;
-        float topHeight = gapY;
-        float bottomY = gapY + GAP_HEIGHT;
-        float bottomHeight = 600.f - bottomY;
-
-        // Верхняя труба (перевёрнутая)
-        pipe.top.setTexture(m_texture);
-        pipe.top.setTextureRect(sf::IntRect(0, 0, m_pipeWidth, topHeight));
-        pipe.top.setOrigin(0, 0);
-        pipe.top.setPosition(800.f, 0.f);
-        pipe.top.setScale(1.f, -1.f);  // переворот по Y
-
-        // Нижняя труба
-        pipe.bottom.setTexture(m_texture);
-        pipe.bottom.setTextureRect(sf::IntRect(0, bottomY, m_pipeWidth, bottomHeight));
-        pipe.bottom.setOrigin(0, 0);
-        pipe.bottom.setPosition(800.f, bottomY);
-        pipe.bottom.setScale(1.f, 1.f);
-
+        // Случайная позиция прохода (от 100 до 400)
+        float gapY = 150.f + rand() % 300;
+        
+        // Верхняя труба (от верха до прохода)
+        pipe.topShape.setSize(sf::Vector2f(m_pipeWidth, gapY));
+        pipe.topShape.setFillColor(sf::Color::Green);
+        pipe.topShape.setPosition(800.f, 0.f);
+        
+        // Нижняя труба (от прохода до низа экрана)
+        float bottomHeight = 600.f - (gapY + GAP_HEIGHT);
+        pipe.bottomShape.setSize(sf::Vector2f(m_pipeWidth, bottomHeight));
+        pipe.bottomShape.setFillColor(sf::Color::Green);
+        pipe.bottomShape.setPosition(800.f, gapY + GAP_HEIGHT);
+        
         pipe.passed = false;
         m_pipes.push_back(pipe);
     }
 
-    // Обновление счёта (пройденные трубы)
-    // Этот код может быть вынесен в отдельный метод, но для простоты добавим здесь
+    // Подсчёт очков
     for (auto& pipe : m_pipes) {
-        if (!pipe.passed && pipe.top.getPosition().x + m_pipeWidth < 100.f) { // птица на x=100
+        if (!pipe.passed && pipe.topShape.getPosition().x + m_pipeWidth < 100.f) {
             pipe.passed = true;
             m_score++;
         }
@@ -62,18 +59,20 @@ void PipeManager::update(float dt) {
 
 void PipeManager::draw(sf::RenderWindow& window) const {
     for (const auto& pipe : m_pipes) {
-        window.draw(pipe.top);
-        window.draw(pipe.bottom);
+        window.draw(pipe.topShape);
+        window.draw(pipe.bottomShape);
     }
 }
 
 bool PipeManager::checkCollision(const sf::FloatRect& birdBounds) const {
+    // Проверка границ экрана
     if (birdBounds.top < 0.f || birdBounds.top + birdBounds.height > 600.f)
         return true;
 
+    // Проверка столкновения с трубами
     for (const auto& pipe : m_pipes) {
-        if (birdBounds.intersects(pipe.top.getGlobalBounds()) ||
-            birdBounds.intersects(pipe.bottom.getGlobalBounds())) {
+        if (birdBounds.intersects(pipe.topShape.getGlobalBounds()) ||
+            birdBounds.intersects(pipe.bottomShape.getGlobalBounds())) {
             return true;
         }
     }
