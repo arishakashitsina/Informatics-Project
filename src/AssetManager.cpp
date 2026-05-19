@@ -7,6 +7,8 @@ void AssetManager::loadTextures() {
     dummy.create(32, 32);
     m_textures["bird"] = dummy;
     m_textures["pipe"] = dummy;
+    m_textures["bird"].loadFromFile("assets/bird.png");
+    m_textures["pipe"].loadFromFile("assets/pipe.png");
 }
 
 void AssetManager::loadSounds() {
