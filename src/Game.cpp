@@ -74,12 +74,16 @@ void Game::update(float dt) {
 }
 
 void Game::render() {
+    std::cout << "render called, score=" << m_score << std::endl; // отладка
     m_window.clear(sf::Color::Cyan);
     m_bird.draw(m_window);
     m_pipes.draw(m_window);
+    
     m_scoreText.setString("Score: " + std::to_string(m_score));
     m_highScoreText.setString("Best: " + std::to_string(m_highScore));
+    
     m_window.draw(m_scoreText);
     m_window.draw(m_highScoreText);
+    
     m_window.display();
 }

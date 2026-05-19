@@ -24,9 +24,18 @@ void AssetManager::playSound(const std::string& name) {
 }
 
 sf::Font& AssetManager::getFont() {
-    // Попробуем загрузить системный шрифт, если нет – вернём пустой
-    if (!m_font.loadFromFile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf")) {
-        // Не страшно, отображение текста пока не критично
+    if (m_font.getInfo().family.empty()) {
+        if (!m_font.loadFromFile("assets/font.ttf")) {
+            std::cerr << "Failed to load font from assets/font.ttf\n";
+            // fallback
+            if (!m_font.loadFromFile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf")) {
+                std::cerr << "Failed to load fallback font\n";
+            } else {
+                std::cout << "Loaded fallback font\n";
+            }
+        } else {
+            std::cout << "Loaded font from assets/font.ttf\n";
+        }
     }
     return m_font;
 }
