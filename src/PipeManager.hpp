@@ -1,13 +1,11 @@
-#ifndef PIPEMANAGER_HPP
-#define PIPEMANAGER_HPP
-
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 struct PipePair {
-    sf::Sprite top;
-    sf::Sprite bottom;
-    bool passed;
+    sf::RectangleShape topShape;
+    sf::RectangleShape bottomShape;
+    bool passed = false;
 };
 
 class PipeManager {
@@ -20,14 +18,12 @@ public:
     void reset();
 
 private:
+    static constexpr float PIPE_SPEED = 200.f;
+    static constexpr float SPAWN_INTERVAL = 2.f;
+    static constexpr float GAP_HEIGHT = 200.f;
+    
     std::vector<PipePair> m_pipes;
+    float m_pipeWidth = 60;
     float m_spawnTimer = 0.f;
-    const float SPAWN_INTERVAL = 2.f;
-    const float PIPE_SPEED = 200.f;
-    const float GAP_HEIGHT = 200.f;
-    float m_pipeWidth = 52.f;  // подберите под ширину pipe.png (можно вычислить из текстуры)
     int m_score = 0;
-    sf::Texture m_texture;
 };
-
-#endif
