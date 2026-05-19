@@ -21,11 +21,13 @@ public:
 
 private:
     std::vector<PipePair> m_pipes;
-    float m_spawnTimer;
+    float m_spawnTimer = 0.f;
     const float SPAWN_INTERVAL = 2.f;
     const float PIPE_SPEED = 200.f;
     const float GAP_HEIGHT = 200.f;
-    int m_score;
+    float m_pipeWidth = 52.f;  // подберите под ширину pipe.png (можно вычислить из текстуры)
+    int m_score = 0;
+    sf::Texture m_texture;
 };
 
 #endif
