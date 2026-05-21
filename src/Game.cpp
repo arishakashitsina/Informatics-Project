@@ -1,6 +1,27 @@
 #include "Game.hpp"
+#include <cmath>
 #include <fstream>
 #include <iostream>
+
+namespace {
+void drawCloud(sf::RenderWindow& window, const sf::Vector2f& center, float scale, const sf::Color& color) {
+    sf::CircleShape puffA(24.f * scale);
+    puffA.setFillColor(color);
+    puffA.setPosition(center.x - 30.f * scale, center.y);
+
+    sf::CircleShape puffB(30.f * scale);
+    puffB.setFillColor(color);
+    puffB.setPosition(center.x, center.y - 12.f * scale);
+
+    sf::CircleShape puffC(22.f * scale);
+    puffC.setFillColor(color);
+    puffC.setPosition(center.x + 30.f * scale, center.y + 4.f * scale);
+
+    window.draw(puffA);
+    window.draw(puffB);
+    window.draw(puffC);
+}
+} // namespace
 
 Game::Game()
     : m_window(sf::VideoMode(800, 600), "Flappy Bird")
@@ -21,6 +42,16 @@ Game::Game()
     m_assets.loadSounds();
     m_bird.init(m_assets.getTexture("bird"));
     m_pipes.init(m_assets.getTexture("pipe"));
+    m_cloudAnchorsSlow = {
+        {120.f, 90.f},
+        {420.f, 130.f},
+        {690.f, 80.f}
+    };
+    m_cloudAnchorsFast = {
+        {240.f, 200.f},
+        {560.f, 240.f},
+        {760.f, 180.f}
+    };
 
     // загрузка рекорда из файла (если есть)
     std::ifstream file("highscore.txt");
@@ -57,6 +88,12 @@ void Game::processEvents() {
 }
 
 void Game::update(float dt) {
+    m_backgroundTime += dt;
+    m_cloudOffsetSlow += 20.f * dt;
+    m_cloudOffsetFast += 35.f * dt;
+    if (m_cloudOffsetSlow > 800.f) m_cloudOffsetSlow -= 800.f;
+    if (m_cloudOffsetFast > 800.f) m_cloudOffsetFast -= 800.f;
+
     m_bird.update(dt);
     m_pipes.update(dt);
 
@@ -74,8 +111,8 @@ void Game::update(float dt) {
 }
 
 void Game::render() {
-    std::cout << "render called, score=" << m_score << std::endl; // отладка
-    m_window.clear(sf::Color(255, 182, 193));
+    m_window.clear();
+    drawBackground();
     m_bird.draw(m_window);
     m_pipes.draw(m_window);
     
@@ -86,4 +123,35 @@ void Game::render() {
     m_window.draw(m_highScoreText);
     
     m_window.display();
+}
+
+void Game::drawBackground() {
+    sf::VertexArray sunset(sf::Quads, 4);
+    sunset[0].position = sf::Vector2f(0.f, 0.f);
+    sunset[1].position = sf::Vector2f(800.f, 0.f);
+    sunset[2].position = sf::Vector2f(800.f, 600.f);
+    sunset[3].position = sf::Vector2f(0.f, 600.f);
+    sunset[0].color = sf::Color(255, 170, 200);
+    sunset[1].color = sf::Color(255, 165, 195);
+    sunset[2].color = sf::Color(255, 125, 165);
+    sunset[3].color = sf::Color(255, 135, 175);
+    m_window.draw(sunset);
+
+    sf::CircleShape sun(65.f);
+    sun.setFillColor(sf::Color(255, 212, 128, 220));
+    sun.setPosition(545.f, 65.f + std::sin(m_backgroundTime * 0.25f) * 6.f);
+    m_window.draw(sun);
+
+    const sf::Color cloudSlow(255, 236, 244, 200);
+    const sf::Color cloudFast(255, 228, 238, 215);
+    for (const sf::Vector2f& anchor : m_cloudAnchorsSlow) {
+        float x = anchor.x - m_cloudOffsetSlow;
+        if (x < -140.f) x += 940.f;
+        drawCloud(m_window, {x, anchor.y}, 1.0f, cloudSlow);
+    }
+    for (const sf::Vector2f& anchor : m_cloudAnchorsFast) {
+        float x = anchor.x - m_cloudOffsetFast;
+        if (x < -140.f) x += 940.f;
+        drawCloud(m_window, {x, anchor.y}, 0.85f, cloudFast);
+    }
 }
