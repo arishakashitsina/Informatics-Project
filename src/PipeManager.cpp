@@ -3,6 +3,37 @@
 #include <ctime>
 #include <iostream>
 
+namespace {
+void drawTreeRelief(sf::RenderWindow& window, const sf::RectangleShape& trunk) {
+    const sf::FloatRect bounds = trunk.getGlobalBounds();
+
+    sf::RectangleShape barkBase({bounds.width, bounds.height});
+    barkBase.setPosition(bounds.left, bounds.top);
+    barkBase.setFillColor(sf::Color(110, 72, 40));
+    window.draw(barkBase);
+
+    sf::RectangleShape lightStripe({bounds.width * 0.22f, bounds.height});
+    lightStripe.setPosition(bounds.left + bounds.width * 0.15f, bounds.top);
+    lightStripe.setFillColor(sf::Color(146, 96, 56, 210));
+    window.draw(lightStripe);
+
+    sf::RectangleShape darkStripe({bounds.width * 0.17f, bounds.height});
+    darkStripe.setPosition(bounds.left + bounds.width * 0.62f, bounds.top);
+    darkStripe.setFillColor(sf::Color(78, 48, 28, 220));
+    window.draw(darkStripe);
+
+    sf::RectangleShape edgeShade({bounds.width * 0.08f, bounds.height});
+    edgeShade.setPosition(bounds.left + bounds.width * 0.92f, bounds.top);
+    edgeShade.setFillColor(sf::Color(60, 36, 22, 180));
+    window.draw(edgeShade);
+
+    sf::RectangleShape leafCap({bounds.width + 24.f, 20.f});
+    leafCap.setPosition(bounds.left - 12.f, bounds.top - 10.f);
+    leafCap.setFillColor(sf::Color(56, 133, 64));
+    window.draw(leafCap);
+}
+} // namespace
+
 void PipeManager::init(const sf::Texture& texture) {
     // Игнорируем текстуру, создаём свои прямоугольники
     (void)texture;
@@ -35,13 +66,13 @@ void PipeManager::update(float dt) {
         
         // Верхняя труба (от верха до прохода)
         pipe.topShape.setSize(sf::Vector2f(m_pipeWidth, gapY));
-        pipe.topShape.setFillColor(sf::Color::Green);
+        pipe.topShape.setFillColor(sf::Color(110, 72, 40));
         pipe.topShape.setPosition(800.f, 0.f);
         
         // Нижняя труба (от прохода до низа экрана)
         float bottomHeight = 600.f - (gapY + GAP_HEIGHT);
         pipe.bottomShape.setSize(sf::Vector2f(m_pipeWidth, bottomHeight));
-        pipe.bottomShape.setFillColor(sf::Color::Green);
+        pipe.bottomShape.setFillColor(sf::Color(110, 72, 40));
         pipe.bottomShape.setPosition(800.f, gapY + GAP_HEIGHT);
         
         pipe.passed = false;
@@ -59,8 +90,8 @@ void PipeManager::update(float dt) {
 
 void PipeManager::draw(sf::RenderWindow& window) const {
     for (const auto& pipe : m_pipes) {
-        window.draw(pipe.topShape);
-        window.draw(pipe.bottomShape);
+        drawTreeRelief(window, pipe.topShape);
+        drawTreeRelief(window, pipe.bottomShape);
     }
 }
 
