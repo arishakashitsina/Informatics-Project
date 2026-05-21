@@ -51,7 +51,7 @@ void Game::processEvents() {
             m_window.close();
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) {
             m_bird.jump();
-            // позже добавим звук: m_assets.playSound("jump");
+            m_assets.playSound("jump");
         }
     }
 }
@@ -62,13 +62,13 @@ void Game::update(float dt) {
 
     if (m_pipes.checkCollision(m_bird.getBounds())) {
         m_isRunning = false;
-        // m_assets.playSound("hit");
+        m_assets.playSound("hit");
     }
 
     int newScore = m_pipes.getScore();
     if (newScore > m_score) {
         m_score = newScore;
-        // m_assets.playSound("score");
+        m_assets.playSound("score");
         if (m_score > m_highScore) m_highScore = m_score;
     }
 }
