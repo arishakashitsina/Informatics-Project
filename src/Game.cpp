@@ -75,7 +75,7 @@ void Game::update(float dt) {
 
 void Game::render() {
     std::cout << "render called, score=" << m_score << std::endl; // отладка
-    m_window.clear(sf::Color::Cyan);
+    m_window.clear(sf::Color(255, 182, 193));
     m_bird.draw(m_window);
     m_pipes.draw(m_window);
     
