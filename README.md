@@ -1,5 +1,7 @@
 # Informatics-Project
 
+![game](./assets/game.png)
+
 ## Run
 
 ```bash
